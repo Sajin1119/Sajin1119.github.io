@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sajin S — Full Stack Developer</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blue: #5a9eff;
+    --purple: #a78bfa;
+    --dark: #050810;
+    --card: rgba(255,255,255,0.03);
+    --border: rgba(90,158,255,0.14);
+    --text: #e0e8ff;
+    --muted: #7788aa;
+    --dim: #4455880;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #050810;
+    color: #e0e8ff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+  canvas#bg {
+    position: fixed; top: 0; left: 0;
+    z-index: 0; pointer-events: none;
+    width: 100%; height: 100%;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 200;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 48px;
+    background: rgba(5,8,16,0.75);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(90,158,255,0.1);
+  }
+  .nav-logo {
+    font-size: 18px; font-weight: 800; letter-spacing: 3px;
+    background: linear-gradient(90deg, #5a9eff, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    cursor: default;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: #6677aa; font-size: 12px; letter-spacing: 2px;
+    text-decoration: none; text-transform: uppercase;
+    transition: color .2s; cursor: pointer;
+  }
+  .nav-links a:hover { color: #5a9eff; }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 120px 48px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── SECTION HEADER ── */
+  .sec-header { text-align: center; margin-bottom: 60px; width: 100%; }
+  .sec-tag {
+    font-size: 11px; letter-spacing: 4px; color: #5a9eff;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .sec-title {
+    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
+    background: linear-gradient(135deg, #e0e8ff 30%, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    text-align: center;
+    min-height: 100vh;
+    padding-top: 0;
+    justify-content: center;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 4px; color: #5a9eff;
+    text-transform: uppercase; margin-bottom: 20px;
+    padding: 6px 18px; border-radius: 20px;
+    border: 1px solid rgba(90,158,255,0.25);
+    background: rgba(90,158,255,0.06);
+  }
+  .hero-name {
+    font-size: clamp(52px, 10vw, 96px); font-weight: 900;
+    line-height: 1.0; letter-spacing: -2px;
+    background: linear-gradient(135deg, #ffffff 20%, #5a9eff 55%, #a78bfa 90%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+  }
+  .hero-role {
+    font-size: clamp(15px, 2.5vw, 20px);
+    color: #6677aa; letter-spacing: 2px; margin-bottom: 12px;
+  }
+  .hero-location {
+    font-size: 13px; color: #445566; margin-bottom: 40px;
+  }
+  .hero-location span { color: #5a9eff; }
+  .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-glow {
+    padding: 14px 36px; border-radius: 8px; border: none;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff; font-size: 13px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; transition: transform .15s, box-shadow .2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-glow:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(90,158,255,0.35);
+  }
+  .btn-ghost {
+    padding: 14px 36px; border-radius: 8px;
+    border: 1px solid rgba(90,158,255,0.35);
+    background: transparent; color: #8ab4ff;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; transition: all .2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: #5a9eff; color: #fff; background: rgba(90,158,255,0.06); }
+
+  /* scroll indicator */
+  .scroll-hint {
+    position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: .4; animation: bounce 2s infinite;
+  }
+  .scroll-hint span { font-size: 10px; letter-spacing: 2px; color: #5a9eff; text-transform: uppercase; }
+  .scroll-arrow { width: 1px; height: 36px; background: linear-gradient(to bottom, #5a9eff, transparent); }
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+  /* ── ABOUT ── */
+  .about-wrap {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px;
+    width: 100%; max-width: 900px; align-items: start;
+  }
+  .about-text p { color: #7788aa; font-size: 15px; line-height: 1.9; margin-bottom: 20px; }
+  .about-text p strong { color: #c0ccee; font-weight: 600; }
+  .about-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 32px 28px;
+    backdrop-filter: blur(10px);
+  }
+  .about-card-title { font-size: 11px; letter-spacing: 3px; color: #5a9eff; text-transform: uppercase; margin-bottom: 20px; }
+  .info-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid rgba(90,158,255,0.07);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .info-label { font-size: 10px; letter-spacing: 1.5px; color: #445566; text-transform: uppercase; }
+  .info-value { font-size: 13px; color: #c0ccee; margin-top: 2px; }
+  .stats-row { display: flex; gap: 0; margin-top: 28px; border-top: 1px solid rgba(90,158,255,0.1); padding-top: 24px; }
+  .stat-box { flex: 1; text-align: center; border-right: 1px solid rgba(90,158,255,0.1); }
+  .stat-box:last-child { border-right: none; }
+  .stat-num { font-size: 26px; font-weight: 800; color: #5a9eff; line-height: 1; }
+  .stat-lbl { font-size: 10px; letter-spacing: 1.5px; color: #445577; text-transform: uppercase; margin-top: 4px; }
+
+  /* ── SKILLS ── */
+  @keyframes skillIn {
+    from { opacity:0; transform: translateY(24px) scale(0.96); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  @keyframes pillPop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+  @keyframes iconSpin {
+    0%   { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+  }
+  .skills-wrap { width: 100%; max-width: 960px; }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .skill-cat {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(90,158,255,0.12);
+    border-radius: 18px; padding: 28px 24px;
+    position: relative; overflow: hidden;
+    opacity: 0;
+    animation: skillIn .6s ease forwards;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+  }
+  .skill-cat::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, #5a9eff, #a78bfa, #5a9eff);
+    background-size: 200% 100%;
+    animation: gradientSlide 3s linear infinite;
+    opacity: 0; transition: opacity .3s;
+  }
+  @keyframes gradientSlide {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+  .skill-cat:hover { border-color: rgba(90,158,255,0.5); transform: translateY(-8px); box-shadow: 0 20px 48px rgba(90,158,255,0.15); }
+  .skill-cat:hover::before { opacity: 1; }
+  .skill-cat:hover .cat-icon { animation: iconSpin .6s ease; }
+  .cat-icon { font-size: 26px; margin-bottom: 14px; display: inline-block; transition: transform .3s; }
+  .cat-label { font-size: 11px; letter-spacing: 3px; color: #5a9eff; text-transform: uppercase; margin-bottom: 16px; font-weight: 600; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    border: 1px solid rgba(90,158,255,0.2);
+    background: rgba(90,158,255,0.06); color: #8ab4ff;
+    cursor: default;
+    transition: background .2s, border-color .2s, transform .15s, color .2s;
+  }
+  .pill:hover {
+    background: linear-gradient(135deg, rgba(90,158,255,0.2), rgba(167,139,250,0.2));
+    border-color: rgba(167,139,250,0.6);
+    color: #e0e8ff;
+    transform: scale(1.05);
+    animation: pillPop .3s ease;
+  }
+
+  /* Progress bars */
+  .skill-bars { margin-top: 40px; }
+  .bar-row { margin-bottom: 16px; }
+  .bar-meta { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .bar-name { font-size: 13px; color: #c0ccee; }
+  .bar-pct { font-size: 12px; color: #5a9eff; }
+  .bar-track { background: rgba(90,158,255,0.1); border-radius: 4px; height: 4px; overflow: hidden; }
+  .bar-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 1.2s cubic-bezier(.16,1,.3,1);
+  }
+  .bar-fill.animated { transform: scaleX(1); }
+
+  /* ── EXPERIENCE ── */
+  .exp-wrap { width: 100%; max-width: 820px; margin: 0 auto; padding: 0 40px; }
+  .timeline { position: relative; }
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent 0%, rgba(90,158,255,0.4) 15%, rgba(90,158,255,0.4) 85%, transparent 100%);
+  }
+  .tl-item { padding-left: 48px; margin-bottom: 52px; position: relative; }
+  .tl-dot {
+    position: absolute; left: -6px; top: 8px;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #0a1228;
+    border: 2px solid #5a9eff;
+    box-shadow: 0 0 16px rgba(90,158,255,0.6);
+    transition: box-shadow .2s;
+  }
+  .tl-item:hover .tl-dot { box-shadow: 0 0 24px rgba(90,158,255,0.9); }
+  .tl-type { font-size: 10px; letter-spacing: 2px; color: #a78bfa; text-transform: uppercase; margin-bottom: 4px; }
+  .tl-date { font-size: 11px; letter-spacing: 1.5px; color: #445577; text-transform: uppercase; margin-bottom: 6px; }
+  .tl-role { font-size: 19px; font-weight: 700; color: #e0e8ff; margin-bottom: 2px; }
+  .tl-company { font-size: 13px; color: #5a9eff; margin-bottom: 14px; }
+  .tl-bullets { list-style: none; }
+  .tl-bullets li {
+    font-size: 13px; color: #6677aa; line-height: 1.75;
+    padding-left: 16px; position: relative; margin-bottom: 4px;
+  }
+  .tl-bullets li::before { content: '▹'; position: absolute; left: 0; color: #5a9eff; }
+  .tl-cert {
+    display: inline-block;
+    margin-top: 10px; padding: 4px 12px;
+    border-radius: 20px; font-size: 11px;
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.25);
+    color: #a78bfa;
+  }
+
+  /* ── EDUCATION ── */
+  .edu-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 36px 32px;
+    max-width: 680px; width: 100%;
+    display: flex; gap: 28px; align-items: flex-start;
+  }
+  .edu-icon {
+    width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(90,158,255,0.15), rgba(167,139,250,0.15));
+    border: 1px solid rgba(90,158,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .edu-degree { font-size: 18px; font-weight: 700; color: #e0e8ff; margin-bottom: 4px; }
+  .edu-uni { font-size: 13px; color: #5a9eff; margin-bottom: 4px; }
+  .edu-year { font-size: 11px; color: #445577; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .edu-badge {
+    display: inline-block; padding: 4px 14px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+    background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3);
+    color: #38bdf8;
+  }
+
+  /* ── CERTIFICATIONS ── */
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%; max-width: 900px; }
+  .cert-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 22px;
+    transition: border-color .2s, transform .2s;
+  }
+  .cert-card:hover { border-color: rgba(167,139,250,0.4); transform: translateY(-4px); }
+  .cert-badge { font-size: 22px; margin-bottom: 12px; }
+  .cert-title { font-size: 14px; font-weight: 700; color: #e0e8ff; margin-bottom: 4px; }
+  .cert-org { font-size: 12px; color: #5a9eff; margin-bottom: 4px; }
+  .cert-date { font-size: 11px; color: #445577; letter-spacing: 1px; }
+
+  /* ── CONTACT ── */
+  .contact-wrap {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    max-width: 860px; width: 100%; align-items: start;
+  }
+  .contact-intro p { font-size: 15px; color: #7788aa; line-height: 1.9; margin-bottom: 24px; }
+  .contact-intro strong { color: #c0ccee; }
+  .contact-links { display: flex; flex-direction: column; gap: 12px; }
+  .c-link {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; border-radius: 12px;
+    background: rgba(90,158,255,0.04);
+    border: 1px solid rgba(90,158,255,0.14);
+    text-decoration: none; color: #8ab4ff;
+    font-size: 14px; transition: all .2s;
+  }
+  .c-link:hover { background: rgba(90,158,255,0.1); border-color: rgba(90,158,255,0.4); color: #e0e8ff; }
+  .c-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(90,158,255,0.1); display: flex;
+    align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+  }
+  .c-text-lbl { font-size: 10px; letter-spacing: 1.5px; color: #445577; text-transform: uppercase; }
+  .c-text-val { font-size: 13px; color: #c0ccee; margin-top: 1px; }
+  .contact-form { display: flex; flex-direction: column; gap: 14px; }
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%; padding: 12px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(90,158,255,0.15);
+    color: #e0e8ff; font-size: 14px; font-family: inherit;
+    outline: none; resize: none; transition: border-color .2s;
+  }
+  .contact-form input:focus,
+  .contact-form textarea:focus { border-color: rgba(90,158,255,0.45); }
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder { color: #445577; }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 10;
+    text-align: center; padding: 32px;
+    border-top: 1px solid rgba(90,158,255,0.08);
+    color: #334466; font-size: 12px; letter-spacing: 1px;
+  }
+  footer span { color: #5a9eff; }
+
+  /* ── FADE IN ── */
+  .fade-section {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  .fade-section.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  /* ── SOCIAL ICONS ── */
+  .social-bar { display: flex; gap: 12px; justify-content: center; margin-top: 28px; }
+  .social-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 20px; border-radius: 8px;
+    border: 1px solid rgba(90,158,255,0.25);
+    background: rgba(90,158,255,0.05);
+    color: #8ab4ff; font-size: 13px; font-weight: 600;
+    text-decoration: none; letter-spacing: 0.5px;
+    transition: all .2s;
+  }
+  .social-btn:hover { background: rgba(90,158,255,0.14); border-color: rgba(90,158,255,0.5); color: #fff; transform: translateY(-2px); }
+  .social-btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+  .nav-social { display: flex; gap: 10px; align-items: center; }
+  .nav-social a {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 7px;
+    border: 1px solid rgba(90,158,255,0.2);
+    background: rgba(90,158,255,0.05);
+    color: #6677aa; transition: all .2s;
+  }
+  .nav-social a:hover { color: #5a9eff; border-color: rgba(90,158,255,0.5); background: rgba(90,158,255,0.1); }
+  .nav-social a svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* ── PROJECTS ── */
+  @keyframes shimmer {
+    0% { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+  }
+  @keyframes cardIn {
+    from { opacity:0; transform: translateY(30px) scale(0.97); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  @keyframes floatDot {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+  .proj-skeleton {
+    height: 220px; border-radius: 16px;
+    background: linear-gradient(90deg, rgba(90,158,255,0.05) 25%, rgba(90,158,255,0.12) 50%, rgba(90,158,255,0.05) 75%);
+    background-size: 600px 100%;
+    animation: shimmer 1.6s infinite linear;
+  }
+  .proj-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(90,158,255,0.12);
+    border-radius: 16px; padding: 28px 24px;
+    display: flex; flex-direction: column; gap: 12px;
+    position: relative; overflow: hidden;
+    opacity: 0;
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+    animation: cardIn .5s ease forwards;
+  }
+  .proj-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(90,158,255,0.07) 0%, transparent 65%);
+    opacity: 0; transition: opacity .3s;
+  }
+  .proj-card { cursor: pointer; }
+  .proj-card:hover { border-color: rgba(90,158,255,0.45); transform: translateY(-6px); box-shadow: 0 16px 48px rgba(90,158,255,0.12); }
+  .proj-card:hover::before { opacity: 1; }
+  .proj-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .proj-icon-wrap {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(90,158,255,0.15), rgba(167,139,250,0.15));
+    border: 1px solid rgba(90,158,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    animation: floatDot 3s ease-in-out infinite;
+  }
+  .proj-links { display: flex; gap: 8px; }
+  .proj-link-btn {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(90,158,255,0.06); border: 1px solid rgba(90,158,255,0.18);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; transition: background .2s, border-color .2s;
+  }
+  .proj-link-btn:hover { background: rgba(90,158,255,0.18); border-color: rgba(90,158,255,0.5); }
+  .proj-link-btn svg { width: 14px; height: 14px; fill: #8ab4ff; }
+  .proj-name { font-size: 16px; font-weight: 700; color: #e0e8ff; }
+  .proj-desc { font-size: 13px; color: #6677aa; line-height: 1.7; flex: 1; }
+  .proj-meta { display: flex; gap: 16px; font-size: 12px; color: #445577; margin-top: 4px; }
+  .proj-meta span { display: flex; align-items: center; gap: 4px; }
+  .lang-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .proj-tag {
+    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+    background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.22);
+    color: #a78bfa;
+  }
+  .lang-colors { --html:#e34c26; --css:#264de4; --javascript:#f1e05a; --python:#3572A5; --typescript:#2b7489; --default:#5a9eff; }
+
+  @media (max-width: 700px) {
+    nav { padding: 14px 20px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 10px; }
+    section { padding: 100px 20px 60px; }
+    .about-wrap { grid-template-columns: 1fr; gap: 32px; }
+    .contact-wrap { grid-template-columns: 1fr; }
+    .edu-card { flex-direction: column; }
+  }
+
+  /* ── APPLE-STYLE SCROLL ANIMATIONS ── */
+
+  /* Base reveal state */
+  [data-scroll] {
+    opacity: 0;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-duration: 0.9s;
+    transition-property: opacity, transform, filter;
+    will-change: opacity, transform;
+  }
+  [data-scroll="fade-up"] { transform: translateY(48px); }
+  [data-scroll="fade-down"] { transform: translateY(-40px); }
+  [data-scroll="fade-left"] { transform: translateX(60px); }
+  [data-scroll="fade-right"] { transform: translateX(-60px); }
+  [data-scroll="zoom-in"] { transform: scale(0.88); filter: blur(4px); }
+  [data-scroll="zoom-out"] { transform: scale(1.1); filter: blur(3px); }
+  [data-scroll="flip-up"] { transform: perspective(600px) rotateX(18deg) translateY(40px); }
+  [data-scroll="slide-blur"] { transform: translateY(32px); filter: blur(8px); }
+
+  /* Revealed state */
+  [data-scroll].in-view {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* Stagger children */
+  [data-scroll-group] > * {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-scroll-group].in-view > *:nth-child(1) { opacity:1; transform:none; transition-delay:0ms; }
+  [data-scroll-group].in-view > *:nth-child(2) { opacity:1; transform:none; transition-delay:80ms; }
+  [data-scroll-group].in-view > *:nth-child(3) { opacity:1; transform:none; transition-delay:160ms; }
+  [data-scroll-group].in-view > *:nth-child(4) { opacity:1; transform:none; transition-delay:240ms; }
+  [data-scroll-group].in-view > *:nth-child(5) { opacity:1; transform:none; transition-delay:320ms; }
+  [data-scroll-group].in-view > *:nth-child(6) { opacity:1; transform:none; transition-delay:400ms; }
+  [data-scroll-group].in-view > *:nth-child(7) { opacity:1; transform:none; transition-delay:480ms; }
+  [data-scroll-group].in-view > *:nth-child(8) { opacity:1; transform:none; transition-delay:560ms; }
+  [data-scroll-group].in-view > *:nth-child(9) { opacity:1; transform:none; transition-delay:640ms; }
+
+  /* Word-by-word text reveal */
+  .reveal-text .word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal-text.in-view .word { opacity: 1; transform: none; }
+
+  /* Horizontal scroll line */
+  .scroll-line {
+    position: fixed; top: 0; left: 0;
+    height: 2px; z-index: 9999; pointer-events: none;
+    background: linear-gradient(90deg, #5a9eff, #a78bfa);
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(90,158,255,0.5);
+  }
+
+  /* Parallax floating elements */
+  .parallax-el { will-change: transform; }
+</style>
+</head>
+<body>
+
+<div class="scroll-line" id="scrollLine"></div>
+<canvas id="bg"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SAJIN S</div>
+  <ul class="nav-links">
+    <li><a onclick="goTo('about')">About</a></li>
+    <li><a onclick="goTo('skills')">Skills</a></li>
+    <li><a onclick="goTo('experience')">Experience</a></li>
+    <li><a onclick="goTo('education')">Education</a></li>
+    <li><a onclick="goTo('contact')">Contact</a></li>
+  </ul>
+  <div class="nav-social">
+    <a href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank" title="LinkedIn">
+      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <a href="https://github.com/Sajin1119" target="_blank" title="GitHub">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">Available for new opportunities</div>
+  <div class="hero-name">Sajin S</div>
+  <div class="hero-role">Full Stack Developer</div>
+  <div class="hero-location">📍 <span>Trivandrum, Kerala, India</span> &nbsp;·&nbsp; React · Angular · Django</div>
+  <div class="hero-btns">
+    <a class="btn-glow" href="/cdn-cgi/l/email-protection#6c1f0d0605021f0d180409091f0d025c5a2c0b010d0500420f0301">Get In Touch</a>
+    <a class="btn-ghost" onclick="goTo('skills')">View My Work</a>
+  </div>
+  <div class="social-bar">
+    <a class="social-btn" href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn
+    </a>
+    <a class="social-btn" href="https://github.com/Sajin1119" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      GitHub
+    </a>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="fade-section">
+  <div class="sec-header" data-scroll="fade-up">
+    <div class="sec-tag">01 — About Me</div>
+    <div class="sec-title">Who I Am</div>
+  </div>
+  <div class="about-wrap">
+    <div class="about-text" data-scroll="fade-right">
+      <p>I'm a <strong>Software Developer</strong> with hands-on experience in frontend and full stack web development using <strong>React, Angular, and Django</strong>. I build responsive, data-driven web applications from the ground up — from pixel-perfect UIs to robust backend APIs.</p>
+      <p>My background in <strong>client-facing technical roles</strong> has sharpened both my communication and problem-solving instincts. I don't just ship code — I understand what users need and build toward that.</p>
+      <p>Currently at <strong>DNI Networks</strong> in Trivandrum, I'm seeking a Software Engineer role where I can contribute to real-world products and grow in an international environment.</p>
+    </div>
+    <div class="about-card" data-scroll="fade-left">
+      <div class="about-card-title">Personal Info</div>
+      <div class="info-row">
+        <div class="info-icon">📍</div>
+        <div><div class="info-label">Location</div><div class="info-value">Krishnalayam, TC 32/805, Titanium P.O<br>Trivandrum – 695021, India</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">📧</div>
+        <div><div class="info-label">Email</div><div class="info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e3d2f2427203d2f3a262b2b3d2f207e780e29232f2722602d2123">[email&#160;protected]</a></div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">📞</div>
+        <div><div class="info-label">Phone</div><div class="info-value">+91 9605404478</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🎓</div>
+        <div><div class="info-label">Education</div><div class="info-value">BCA — Alagappa University</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">💼</div>
+        <div><div class="info-label">LinkedIn</div><div class="info-value"><a href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank" style="color:#5a9eff;text-decoration:none;">linkedin.com/in/sajinsatheesan</a></div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🐙</div>
+        <div><div class="info-label">GitHub</div><div class="info-value"><a href="https://github.com/Sajin1119" target="_blank" style="color:#5a9eff;text-decoration:none;">github.com/Sajin1119</a></div></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num">2+</div><div class="stat-lbl">Years Exp</div></div>
+        <div class="stat-box"><div class="stat-num">2</div><div class="stat-lbl">Companies</div></div>
+        <div class="stat-box"><div class="stat-num">10+</div><div class="stat-lbl">Skills</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="fade-section">
+  <div class="sec-header" data-scroll="fade-up">
+    <div class="sec-tag">02 — Skills</div>
+    <div class="sec-title">Tech Stack</div>
+  </div>
+  <div class="skills-wrap">
+    <div class="skills-grid" data-scroll-group>
+      <div class="skill-cat">
+        <div class="cat-icon" style="animation-delay:0ms">🖥️</div>
+        <div class="cat-label">Frontend</div>
+        <div class="pills">
+          <span class="pill">HTML5</span>
+          <span class="pill">CSS3</span>
+          <span class="pill">JavaScript ES6+</span>
+          <span class="pill">React.js</span>
+          <span class="pill">Angular</span>
+          <span class="pill">Responsive Design</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <div class="cat-icon" style="animation-delay:100ms">⚙️</div>
+        <div class="cat-label">Backend</div>
+        <div class="pills">
+          <span class="pill">Python</span>
+          <span class="pill">Django</span>
+          <span class="pill">RESTful APIs</span>
+          <span class="pill">CRUD Operations</span>
+          <span class="pill">Business Logic</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <div class="cat-icon" style="animation-delay:200ms">🗄️</div>
+        <div class="cat-label">Database</div>
+        <div class="pills">
+          <span class="pill">SQL</span>
+          <span class="pill">Database Design</span>
+          <span class="pill">Data Fetching</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <div class="cat-icon" style="animation-delay:300ms">🔧</div>
+        <div class="cat-label">Tools & Platforms</div>
+        <div class="pills">
+          <span class="pill">Git</span>
+          <span class="pill">GitHub</span>
+          <span class="pill">VS Code</span>
+          <span class="pill">Linux (Basic)</span>
+          <span class="pill">Windows OS</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <div class="cat-icon" style="animation-delay:400ms">🤝</div>
+        <div class="cat-label">Soft Skills</div>
+        <div class="pills">
+          <span class="pill">Client Communication</span>
+          <span class="pill">Team Collaboration</span>
+          <span class="pill">Problem Solving</span>
+          <span class="pill">Presentations</span>
+          <span class="pill">Requirement Analysis</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <div class="cat-icon" style="animation-delay:500ms">💻</div>
+        <div class="cat-label">Additional</div>
+        <div class="pills">
+          <span class="pill">Laptop Troubleshooting</span>
+          <span class="pill">System Setup</span>
+          <span class="pill">End-user Support</span>
+          <span class="pill">Technical Explanation</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proficiency Bars -->
+    <div class="skill-bars" data-scroll="fade-up" style="margin-top:48px; width:100%;">
+      <div style="font-size:11px;letter-spacing:3px;color:#5a9eff;text-transform:uppercase;margin-bottom:24px;">Proficiency</div>
+      <div class="bar-row"><div class="bar-meta"><span class="bar-name">React.js</span><span class="bar-pct">85%</span></div><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div></div>
+      <div class="bar-row"><div class="bar-meta"><span class="bar-name">Angular</span><span class="bar-pct">80%</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div></div>
+      <div class="bar-row"><div class="bar-meta"><span class="bar-name">Django / Python</span><span class="bar-pct">75%</span></div><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div></div>
+      <div class="bar-row"><div class="bar-meta"><span class="bar-name">HTML5 / CSS3 / JS</span><span class="bar-pct">90%</span></div><div class="bar-track"><div class="bar-fill" style="width:90%"></div></div></div>
+      <div class="bar-row"><div class="bar-meta"><span class="bar-name">REST APIs</span><span class="bar-pct">80%</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div></div>
+      <div class="bar-row"><div class="bar-meta"><span class="bar-name">Git / GitHub</span><span class="bar-pct">75%</span></div><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="fade-section">
+  <div class="sec-header" data-scroll="fade-up">
+    <div class="sec-tag">03 — Experience</div>
+    <div class="sec-title">Work History</div>
+  </div>
+  <div class="exp-wrap">
+    <div class="timeline">
+
+      <!-- DNI Networks -->
+      <div class="tl-item" data-scroll="fade-right">
+        <div class="tl-dot"></div>
+        <div class="tl-type">Current Role</div>
+        <div class="tl-date">September 2024 — Present</div>
+        <div class="tl-role">Full Stack Developer</div>
+        <div class="tl-company">DNI Networks · Trivandrum, India</div>
+        <ul class="tl-bullets">
+          <li>Developed and maintained web applications using <strong style="color:#c0ccee">Angular</strong> and <strong style="color:#c0ccee">React</strong></li>
+          <li>Built responsive user interfaces with HTML, CSS, and JavaScript</li>
+          <li>Integrated frontend components with backend REST APIs</li>
+          <li>Assisted in developing and maintaining backend services using <strong style="color:#c0ccee">Django</strong></li>
+          <li>Implemented CRUD operations and core business logic</li>
+          <li>Worked with APIs to fetch, display, and update data dynamically</li>
+          <li>Debugged and resolved issues across frontend and backend code</li>
+          <li>Collaborated with team members to implement new features and enhancements</li>
+          <li>Followed coding standards and project guidelines</li>
+        </ul>
+      </div>
+
+      <!-- Knowspace Technologies -->
+      <div class="tl-item" data-scroll="fade-right" style="transition-delay:150ms">
+        <div class="tl-dot"></div>
+        <div class="tl-type">Previous Role</div>
+        <div class="tl-date">March 2023 — February 2024</div>
+        <div class="tl-role">Frontend Developer</div>
+        <div class="tl-company">Knowspace Technologies · Trivandrum, India</div>
+        <ul class="tl-bullets">
+          <li>Developed intuitive and responsive web interfaces using <strong style="color:#c0ccee">React.js</strong></li>
+          <li>Worked closely with clients to gather requirements and implement solutions</li>
+          <li>Collaborated with backend developers and designers for seamless integration</li>
+          <li>Conducted product demonstrations and incorporated client feedback</li>
+          <li>Improved customer satisfaction through iterative UI improvements</li>
+          <li>Strengthened communication skills through client meetings and presentations</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION & CERTIFICATIONS -->
+<section id="education" class="fade-section">
+  <div class="sec-header" data-scroll="fade-up">
+    <div class="sec-tag">04 — Education & Training</div>
+    <div class="sec-title">Qualifications</div>
+  </div>
+
+  <!-- Degree -->
+  <div class="edu-card" data-scroll="zoom-in" style="margin-bottom:48px;">
+    <div class="edu-icon">🎓</div>
+    <div>
+      <div class="edu-degree">Bachelor of Computer Applications (BCA)</div>
+      <div class="edu-uni">Alagappa University · Karaikudi, Tamil Nadu</div>
+      <div class="edu-year">2019 — 2022</div>
+      <span class="edu-badge">First Class with Distinction</span>
+    </div>
+  </div>
+
+  <!-- ITI -->
+  <div class="edu-card" data-scroll="zoom-in" style="margin-bottom:64px;transition-delay:100ms">
+    <div class="edu-icon">⚡</div>
+    <div>
+      <div class="edu-degree">Diploma in Wiring (Wireman)</div>
+      <div class="edu-uni">Government ITI · Chackai, Trivandrum</div>
+      <div class="edu-year">2017 — 2019</div>
+    </div>
+  </div>
+
+  <!-- Certifications -->
+  <div style="width:100%;max-width:900px;">
+    <div class="sec-tag" style="text-align:center;margin-bottom:24px;">Certifications & Training</div>
+    <div class="cert-grid" data-scroll-group>
+      <div class="cert-card">
+        <div class="cert-badge">⚛️</div>
+        <div class="cert-title">Full Stack Web Development</div>
+        <div style="font-size:12px;color:#8ab4ff;margin-bottom:4px;">React & Django</div>
+        <div class="cert-org">OneTeam Solutions · Trivandrum</div>
+        <div class="cert-date">March 2024 — August 2024</div>
+        <ul style="list-style:none;margin-top:12px;">
+          <li style="font-size:12px;color:#556688;padding-left:14px;position:relative;margin-bottom:3px;"><span style="position:absolute;left:0;color:#5a9eff">▹</span>Hands-on training in React.js and Django</li>
+          <li style="font-size:12px;color:#556688;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:#5a9eff">▹</span>Built real-world web applications</li>
+        </ul>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge">🅰️</div>
+        <div class="cert-title">Full Stack Web Development</div>
+        <div style="font-size:12px;color:#8ab4ff;margin-bottom:4px;">Angular & Django</div>
+        <div class="cert-org">Mashupstack · Trivandrum</div>
+        <div class="cert-date">July 2022 — February 2023</div>
+        <ul style="list-style:none;margin-top:12px;">
+          <li style="font-size:12px;color:#556688;padding-left:14px;position:relative;margin-bottom:3px;"><span style="position:absolute;left:0;color:#5a9eff">▹</span>Practical training in Angular and Django</li>
+          <li style="font-size:12px;color:#556688;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:#5a9eff">▹</span>Developed multiple project-based applications</li>
+        </ul>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge">🔌</div>
+        <div class="cert-title">Diploma in Wiring (Wireman)</div>
+        <div style="font-size:12px;color:#8ab4ff;margin-bottom:4px;">Electrical Trade</div>
+        <div class="cert-org">Government ITI · Chackai, Trivandrum</div>
+        <div class="cert-date">2017 — 2019</div>
+        <ul style="list-style:none;margin-top:12px;">
+          <li style="font-size:12px;color:#556688;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:#5a9eff">▹</span>Government-certified electrical trade qualification</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="fade-section">
+  <div class="sec-header" data-scroll="fade-up">
+    <div class="sec-tag">05 — Projects</div>
+    <div class="sec-title">My Recent Works</div>
+    <p style="color:#6677aa;font-size:14px;margin-top:12px;">Here are a few projects I've worked on recently.</p>
+  </div>
+  <div id="proj-grid" data-scroll-group style="width:100%;max-width:980px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;">
+
+    <!-- Idukki Gold -->
+    <div class="proj-card" style="animation-delay:0ms" onclick="window.open('https://sajin1119.github.io/idukki/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:0ms">🏛️</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/idukki" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/idukki/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/idukki/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">Idukki Gold ↗</a>
+      <div class="proj-desc">South Indian eatery website for a Kerala restaurant in Toronto, Canada. Features menu, gallery, reviews & contact.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- Sajin Personal (Orange) -->
+    <div class="proj-card" style="animation-delay:80ms" onclick="window.open('https://sajin1119.github.io/sajin-orange/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:200ms">👤</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/sajin-orange" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/sajin-orange/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/sajin-orange/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">Sajin Personal ↗</a>
+      <div class="proj-desc">Personal developer portfolio highlighting fullstack skills in Angular, Django & React with services and contact.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- Knowspace -->
+    <div class="proj-card" style="animation-delay:160ms" onclick="window.open('https://sajin1119.github.io/knowspace/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:400ms">🏢</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/knowspace" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/knowspace/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/knowspace/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">Knowspace ↗</a>
+      <div class="proj-desc">Tech solutions company site with offices in India & North America. Features web dev, digital marketing & branding services.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- E-com Frontend -->
+    <div class="proj-card" style="animation-delay:240ms" onclick="window.open('https://sajin1119.github.io/resjs/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:600ms">🛒</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/resjs" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/resjs/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/resjs/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">E-com Frontend ↗</a>
+      <div class="proj-desc">Modern e-commerce store frontend with product listings, categories, cart UI and newsletter signup.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- Mala Uthuru Traders -->
+    <div class="proj-card" style="animation-delay:320ms" onclick="window.open('https://sajin1119.github.io/mala/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:800ms">🚢</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/mala" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/mala/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/mala/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">Mala Uthuru Traders ↗</a>
+      <div class="proj-desc">Vehicle trading platform for Mala Uthuru Traders, Maldives — cars, bikes, scooters & spare parts catalog.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- IBW Shop -->
+    <div class="proj-card" style="animation-delay:400ms" onclick="window.open('https://sajin1119.github.io/ibw/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:1000ms">🛍️</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/ibw" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/ibw/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/ibw/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">IBW Shop ↗</a>
+      <div class="proj-desc">Business website for IBW Shop, Maldives — a 31-year-old family business selling groceries, food items & more.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- Doctor Personal -->
+    <div class="proj-card" style="animation-delay:480ms" onclick="window.open('https://sajin1119.github.io/doctor/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:1200ms">🩺</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/doctor" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/doctor/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/doctor/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">Doctor Personal ↗</a>
+      <div class="proj-desc">Portfolio for Dr. Fathima Noora S, Behaviour Therapist — showcasing education, experience and key projects.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- Sajin Personal~ -->
+    <div class="proj-card" style="animation-delay:560ms" onclick="window.open('https://sajin1119.github.io/personal/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:1400ms">💼</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/personal" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/personal/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/personal/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">Sajin Personal~ ↗</a>
+      <div class="proj-desc">Personal portfolio landing page — fullstack developer profile with skills, services & hire me section.</div>
+      <div class="proj-tags"><span class="proj-tag">React</span><span class="proj-tag">Python</span><span class="proj-tag">Django</span><span class="proj-tag">CSS</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#f1e05a"></span>JavaScript</span><span>🌐 Live</span></div>
+    </div>
+
+    <!-- Epsilon -->
+    <div class="proj-card" style="animation-delay:640ms" onclick="window.open('https://sajin1119.github.io/epsilon/','_blank')">
+      <div class="proj-top">
+        <div class="proj-icon-wrap" style="animation-delay:1600ms">✨</div>
+        <div class="proj-links">
+          <a class="proj-link-btn" href="https://github.com/Sajin1119/epsilon" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a class="proj-link-btn" href="https://sajin1119.github.io/epsilon/" target="_blank" title="Live Demo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8ab4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+      <a class="proj-name" href="https://sajin1119.github.io/epsilon/" target="_blank" style="text-decoration:none;color:#e0e8ff;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#5a9eff'" onmouseout="this.style.color='#e0e8ff'">Epsilon ↗</a>
+      <div class="proj-desc">Coaching centre website for Epsilon, Trivandrum — maths classes for +1/+2 students with courses, team & testimonials.</div>
+      <div class="proj-tags"><span class="proj-tag">HTML</span><span class="proj-tag">CSS</span><span class="proj-tag">Bootstrap</span><span class="proj-tag">JavaScript</span></div>
+      <div class="proj-meta"><span><span class="lang-dot" style="background:#e34c26"></span>HTML</span><span>🌐 Live</span></div>
+    </div>
+
+  </div>
+  <a href="https://github.com/Sajin1119" target="_blank" class="btn-ghost" style="margin-top:44px;display:inline-block;text-decoration:none;">View All on GitHub →</a>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="fade-section">
+  <div class="sec-header" data-scroll="fade-up">
+    <div class="sec-tag">06 — Contact</div>
+    <div class="sec-title">Let's Connect</div>
+  </div>
+  <div class="contact-wrap">
+    <div class="contact-intro" data-scroll="fade-right">
+      <p>I'm <strong>open to new opportunities</strong> — whether it's a full-time role, freelance project, or just a conversation about tech. Feel free to reach out through any channel below.</p>
+      <p>Based in <strong>Trivandrum, Kerala</strong> and open to remote work or international relocation.</p>
+      <div class="contact-links">
+        <a class="c-link" href="mailto:sajinsatheesan06@gmail.com">
+          <div class="c-icon">✉️</div>
+          <div><div class="c-text-lbl">Email</div><div class="c-text-val">sajinsatheesan06@gmail.com</div></div>
+        </a>
+        <a class="c-link" href="tel:+919605404478">
+          <div class="c-icon">📱</div>
+          <div><div class="c-text-lbl">Phone</div><div class="c-text-val">+91 9605404478</div></div>
+        </a>
+        <a class="c-link" href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank">
+          <div class="c-icon"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#8ab4ff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></div>
+          <div><div class="c-text-lbl">LinkedIn</div><div class="c-text-val">linkedin.com/in/sajinsatheesan</div></div>
+        </a>
+        <a class="c-link" href="https://github.com/Sajin1119" target="_blank">
+          <div class="c-icon"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#8ab4ff"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></div>
+          <div><div class="c-text-lbl">GitHub</div><div class="c-text-val">github.com/Sajin1119</div></div>
+        </a>
+        <div class="c-link" style="cursor:default;">
+          <div class="c-icon">📍</div>
+          <div><div class="c-text-lbl">Location</div><div class="c-text-val">Trivandrum – 695021, Kerala, India</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:40px 20px;background:rgba(255,255,255,0.02);border:1px solid rgba(90,158,255,0.1);border-radius:18px;">
+      <div style="font-size:48px;">👋</div>
+      <div style="font-size:20px;font-weight:700;color:#e0e8ff;">Want to work together?</div>
+      <p style="color:#7788aa;font-size:14px;line-height:1.8;">Drop me an email or connect on LinkedIn — I typically respond within 24 hours.</p>
+      <a href="mailto:sajinsatheesan06@gmail.com" class="btn-glow" style="text-decoration:none;">sajinsatheesan06@gmail.com</a>
+      <a href="https://wa.me/919605404478" target="_blank" class="btn-whatsapp" style="display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:8px;background:#25D366;color:#fff;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:transform .15s,box-shadow .2s;margin-top:4px;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(37,211,102,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#fff;flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Chat on WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="position:relative;z-index:10;background:rgba(5,8,16,0.95);border-top:1px solid rgba(90,158,255,0.1);padding:56px 48px 32px;">
+  <div style="max-width:960px;margin:0 auto;">
+    <!-- Top row -->
+    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px;margin-bottom:48px;">
+      <!-- Brand -->
+      <div>
+        <div style="font-size:24px;font-weight:800;letter-spacing:3px;background:linear-gradient(90deg,#5a9eff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;">SAJIN S</div>
+        <p style="color:#6677aa;font-size:13px;line-height:1.8;max-width:280px;">Full Stack Developer based in Trivandrum, Kerala. Building modern web apps with React, Angular & Django.</p>
+        <div style="display:flex;gap:10px;margin-top:20px;">
+          <a href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank" style="width:36px;height:36px;border-radius:8px;background:rgba(90,158,255,0.08);border:1px solid rgba(90,158,255,0.2);display:flex;align-items:center;justify-content:center;transition:all .2s;text-decoration:none;" onmouseover="this.style.background='rgba(90,158,255,0.2)'" onmouseout="this.style.background='rgba(90,158,255,0.08)'">
+            <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:#8ab4ff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://github.com/Sajin1119" target="_blank" style="width:36px;height:36px;border-radius:8px;background:rgba(90,158,255,0.08);border:1px solid rgba(90,158,255,0.2);display:flex;align-items:center;justify-content:center;transition:all .2s;text-decoration:none;" onmouseover="this.style.background='rgba(90,158,255,0.2)'" onmouseout="this.style.background='rgba(90,158,255,0.08)'">
+            <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:#8ab4ff"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <a href="https://wa.me/919605404478" target="_blank" style="width:36px;height:36px;border-radius:8px;background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.2);display:flex;align-items:center;justify-content:center;transition:all .2s;text-decoration:none;" onmouseover="this.style.background='rgba(37,211,102,0.2)'" onmouseout="this.style.background='rgba(37,211,102,0.08)'">
+            <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+      <!-- Quick Links -->
+      <div>
+        <div style="font-size:11px;letter-spacing:3px;color:#5a9eff;text-transform:uppercase;margin-bottom:20px;font-weight:600;">Quick Links</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a onclick="goTo('about')" style="color:#6677aa;font-size:13px;cursor:pointer;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">→ About Me</a>
+          <a onclick="goTo('skills')" style="color:#6677aa;font-size:13px;cursor:pointer;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">→ Tech Stack</a>
+          <a onclick="goTo('experience')" style="color:#6677aa;font-size:13px;cursor:pointer;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">→ Work History</a>
+          <a onclick="goTo('education')" style="color:#6677aa;font-size:13px;cursor:pointer;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">→ Education</a>
+          <a onclick="goTo('projects')" style="color:#6677aa;font-size:13px;cursor:pointer;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">→ Projects</a>
+          <a onclick="goTo('contact')" style="color:#6677aa;font-size:13px;cursor:pointer;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">→ Contact</a>
+        </div>
+      </div>
+      <!-- Contact Info -->
+      <div>
+        <div style="font-size:11px;letter-spacing:3px;color:#5a9eff;text-transform:uppercase;margin-bottom:20px;font-weight:600;">Contact</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <a href="mailto:sajinsatheesan06@gmail.com" style="display:flex;align-items:center;gap:8px;color:#6677aa;font-size:13px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">
+            <span style="color:#5a9eff;font-size:14px;">✉</span> sajinsatheesan06@gmail.com
+          </a>
+          <a href="tel:+919605404478" style="display:flex;align-items:center;gap:8px;color:#6677aa;font-size:13px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#8ab4ff'" onmouseout="this.style.color='#6677aa'">
+            <span style="color:#5a9eff;font-size:14px;">📞</span> +91 9605404478
+          </a>
+          <a href="https://wa.me/919605404478" target="_blank" style="display:flex;align-items:center;gap:8px;color:#6677aa;font-size:13px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#25D366'" onmouseout="this.style.color='#6677aa'">
+            <span style="color:#25D366;font-size:14px;">💬</span> WhatsApp
+          </a>
+          <div style="display:flex;align-items:center;gap:8px;color:#6677aa;font-size:13px;">
+            <span style="color:#5a9eff;font-size:14px;">📍</span> Trivandrum, Kerala, India
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Divider -->
+    <div style="border-top:1px solid rgba(90,158,255,0.08);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <p style="color:#334466;font-size:12px;letter-spacing:1px;">
+        © 2025 <span style="color:#5a9eff;font-weight:600;">Sajin S</span>. All rights reserved.
+      </p>
+      <p style="color:#334466;font-size:12px;">
+        Designed & Developed by
+        <span style="background:linear-gradient(90deg,#5a9eff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">Sajin Satheesan</span>
+        &nbsp;·&nbsp; Trivandrum, Kerala 🇮🇳
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- THREE.JS -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── Navigation ──
+function goTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── Projects card stagger on scroll ──
+const projCardObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.proj-card').forEach((card, i) => {
+        setTimeout(() => { card.style.opacity = '1'; }, i * 80);
+      });
+    }
+  });
+}, { threshold: 0.05 });
+document.querySelectorAll('#projects').forEach(el => projCardObserver.observe(el));
+
+// ── Skill cards stagger on scroll ──
+const skillObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.skill-cat').forEach((card, i) => {
+        setTimeout(() => { card.style.opacity = '1'; }, i * 100);
+      });
+    }
+  });
+}, { threshold: 0.05 });
+document.querySelectorAll('#skills').forEach(el => skillObserver.observe(el));
+
+// ── Scroll Fade In ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
+
+// ── Skill Bar Animation ──
+const barObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.bar-fill').forEach(b => b.classList.add('animated'));
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('#skills').forEach(el => barObserver.observe(el));
+
+// ── THREE.JS 3D Background ──
+const canvas = document.getElementById('bg');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 30;
+
+function onResize() {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+}
+onResize();
+window.addEventListener('resize', onResize);
+
+// Stars
+const starGeo = new THREE.BufferGeometry();
+const N = 2200;
+const pos = new Float32Array(N * 3);
+for (let i = 0; i < N * 3; i++) pos[i] = (Math.random() - 0.5) * 220;
+starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x8ab4ff, size: 0.11, transparent: true, opacity: 0.65 })));
+
+// Nebula-like larger faint stars
+const faintGeo = new THREE.BufferGeometry();
+const fPos = new Float32Array(300 * 3);
+for (let i = 0; i < 300 * 3; i++) fPos[i] = (Math.random() - 0.5) * 180;
+faintGeo.setAttribute('position', new THREE.BufferAttribute(fPos, 3));
+scene.add(new THREE.Points(faintGeo, new THREE.PointsMaterial({ color: 0xa78bfa, size: 0.3, transparent: true, opacity: 0.25 })));
+
+// Wireframe objects
+function addWire(geo, col, x, y, z) {
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: col, wireframe: true, opacity: 0.13, transparent: true }));
+  m.position.set(x, y, z); scene.add(m); return m;
+}
+const objs = [
+  addWire(new THREE.IcosahedronGeometry(4.5, 1), 0x5a9eff, -20, 10, -18),
+  addWire(new THREE.OctahedronGeometry(3.5, 0), 0xa78bfa, 22, -8, -22),
+  addWire(new THREE.TorusGeometry(5.5, 1.3, 8, 22), 0x38bdf8, 16, 14, -28),
+  addWire(new THREE.IcosahedronGeometry(3, 0), 0x818cf8, -22, -12, -20),
+  addWire(new THREE.TetrahedronGeometry(2.5, 0), 0x5a9eff, 8, -16, -15),
+  addWire(new THREE.OctahedronGeometry(2, 0), 0xa78bfa, -8, 18, -24),
+];
+
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = (e.clientX / window.innerWidth - 0.5) * 2;
+  my = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+const speeds = [
+  [0.003, 0.004], [0.005, 0.003], [0.002, 0.005],
+  [0.006, 0.002], [0.004, 0.006], [0.003, 0.005]
+];
+let t = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  t += 0.005;
+  objs.forEach((o, i) => {
+    o.rotation.x += speeds[i][0];
+    o.rotation.y += speeds[i][1];
+  });
+  camera.position.x += (mx * 4 - camera.position.x) * 0.035;
+  camera.position.y += (-my * 2.5 - camera.position.y) * 0.035;
+  camera.lookAt(scene.position);
+  renderer.render(scene, camera);
+}
+animate();
+
+// ── APPLE-STYLE SCROLL ENGINE ──
+
+// Scroll progress bar
+const scrollLine = document.getElementById('scrollLine');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollLine.style.width = Math.min(pct, 100) + '%';
+}, { passive: true });
+
+// Intersection observer for [data-scroll] elements
+const appleObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in-view');
+      // Don't unobserve — keep the in-view state persistent
+    }
+  });
+}, {
+  threshold: 0.12,
+  rootMargin: '0px 0px -40px 0px'
+});
+
+document.querySelectorAll('[data-scroll]').forEach(el => appleObserver.observe(el));
+
+// Intersection observer for [data-scroll-group] elements
+const groupObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in-view');
+    }
+  });
+}, {
+  threshold: 0.08,
+  rootMargin: '0px 0px -20px 0px'
+});
+
+document.querySelectorAll('[data-scroll-group]').forEach(el => groupObserver.observe(el));
+
+// Word-by-word text reveal for hero name
+function wrapWords(el) {
+  if (!el) return;
+  el.classList.add('reveal-text');
+  const words = el.textContent.split(' ');
+  el.innerHTML = words.map((w, i) =>
+    `<span class="word" style="transition-delay:${i * 60}ms">${w}</span>`
+  ).join(' ');
+}
+wrapWords(document.querySelector('.hero-name'));
+wrapWords(document.querySelector('.hero-role'));
+
+// Trigger hero text on load
+setTimeout(() => {
+  document.querySelectorAll('.reveal-text').forEach(el => el.classList.add('in-view'));
+}, 200);
+
+// Smooth parallax on scroll for floating 3D objects (subtle depth)
+let lastScrollY = 0;
+window.addEventListener('scroll', () => {
+  const sy = window.scrollY;
+  const delta = sy - lastScrollY;
+  lastScrollY = sy;
+
+  // Parallax the hero eyebrow and role text
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const heroProgress = Math.min(sy / (window.innerHeight * 0.8), 1);
+    const eyebrow = hero.querySelector('.hero-eyebrow');
+    const location = hero.querySelector('.hero-location');
+    const btns = hero.querySelector('.hero-btns');
+    const social = hero.querySelector('.social-bar');
+    if (eyebrow) eyebrow.style.transform = `translateY(${heroProgress * -30}px)`;
+    if (location) location.style.transform = `translateY(${heroProgress * -20}px)`;
+    if (btns) btns.style.transform = `translateY(${heroProgress * -15}px)`;
+    if (social) social.style.transform = `translateY(${heroProgress * -10}px)`;
+  }
+}, { passive: true });
+
+</script>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init('N2Q5t4EBLHdxCwMRx');
+
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw9puLOej-h5Pu2U63w2p2RVQ4vACTZhl4VVYAoYR9ix-BGMLddHIG3xNqFgKj_cAC7/exec';
+
+  async function sendMessage() {
+    const name    = document.getElementById('cf-name').value.trim();
+    const email   = document.getElementById('cf-email').value.trim();
+    const subject = document.getElementById('cf-subject').value.trim();
+    const message = document.getElementById('cf-message').value.trim();
+    const btn     = document.getElementById('cf-btn');
+    const status  = document.getElementById('cf-status');
+
+    if (!name || !email || !subject || !message) {
+      showStatus('⚠️ Please fill in all fields.', '#f59e0b', 'rgba(245,158,11,0.1)');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showStatus('⚠️ Please enter a valid email address.', '#f59e0b', 'rgba(245,158,11,0.1)');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    btn.style.opacity = '0.7';
+
+    try {
+      // 1. Send email via EmailJS
+      const emailResult = await emailjs.send('service_1vzzsgj', 'lqjiepl', {
+        name:       name,
+        from_name:  name,
+        email:      email,
+        from_email: email,
+        subject:    subject,
+        title:      subject,
+        message:    message,
+        time:       new Date().toLocaleString(),
+      });
+      console.log('EmailJS success:', emailResult);
+
+      // 2. Save to Google Sheets (fire and forget — no-cors so no response check)
+      fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message })
+      });
+
+      showStatus('✅ Message sent! I\'ll get back to you soon.', '#34d399', 'rgba(52,211,153,0.1)');
+      document.getElementById('cf-name').value    = '';
+      document.getElementById('cf-email').value   = '';
+      document.getElementById('cf-subject').value = '';
+      document.getElementById('cf-message').value = '';
+
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      const errMsg = err && err.text ? err.text : (err && err.message ? err.message : JSON.stringify(err));
+      showStatus('❌ Error: ' + errMsg, '#f87171', 'rgba(248,113,113,0.1)');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+    btn.style.opacity = '1';
+  }
+
+  function showStatus(msg, color, bg) {
+    const el = document.getElementById('cf-status');
+    el.textContent = msg;
+    el.style.display = 'block';
+    el.style.color = color;
+    el.style.background = bg;
+    el.style.border = '1px solid ' + color + '44';
+    setTimeout(() => { el.style.display = 'none'; }, 6000);
+  }
+</script>
+</body>
+</html>
