@@ -26,16 +26,16 @@
   }
   canvas#bg {
     position: fixed; top: 0; left: 0;
-    z-index: 0; pointer-events: none;
+    z-index: 0; pointer-events: none !important;
     width: 100%; height: 100%;
   }
 
   /* ── NAV ── */
   nav {
-    position: fixed; top: 0; width: 100%; z-index: 200;
+    position: fixed; top: 0; width: 100%; z-index: 9998;
     display: flex; justify-content: space-between; align-items: center;
     padding: 16px 48px;
-    background: rgba(5,8,16,0.75);
+    background: rgba(5,8,16,0.95);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(90,158,255,0.1);
   }
@@ -470,17 +470,20 @@
 
   /* ── HAMBURGER MENU ── */
   .hamburger {
-    display: none; flex-direction: column; gap: 5px;
-    cursor: pointer; padding: 4px; z-index: 300;
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    cursor: pointer; padding: 8px; z-index: 9999;
+    position: relative; background: none; border: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .hamburger span {
-    display: block; width: 24px; height: 2px;
+    display: block; width: 26px; height: 2px;
     background: #8ab4ff; border-radius: 2px;
     transition: all .3s ease;
+    pointer-events: none;
   }
-  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background:#5a9eff; }
   .hamburger.open span:nth-child(2) { opacity: 0; }
-  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background:#5a9eff; }
 
   /* ── TABLET: 768px ── */
   @media (max-width: 960px) {
@@ -494,18 +497,67 @@
     /* Nav */
     nav { padding: 14px 20px; position: fixed; }
     .nav-links {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(5,8,16,0.98);
-      backdrop-filter: blur(20px);
-      flex-direction: column; align-items: center; justify-content: center;
-      gap: 32px; z-index: 150;
-      opacity: 0; pointer-events: none;
-      transition: opacity .3s ease;
+      display: flex !important;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #050810 !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      justify-content: center !important;
+      gap: 0 !important;
+      z-index: 500;
+      list-style: none;
+      padding: 80px 36px 40px;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+      overflow-y: auto;
+      box-shadow: -4px 0 40px rgba(0,0,0,0.6);
     }
-    .nav-links.mobile-open { opacity: 1; pointer-events: all; }
-    .nav-links a { font-size: 18px; letter-spacing: 3px; }
+    .nav-links.mobile-open {
+      transform: translateX(0);
+    }
+    .nav-links li {
+      width: 100%;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .nav-links a {
+      font-size: 26px !important;
+      font-weight: 800 !important;
+      letter-spacing: 1px !important;
+      color: #ffffff !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 14px !important;
+      padding: 18px 0 !important;
+      border-bottom: 1px solid rgba(90,158,255,0.12) !important;
+      text-decoration: none !important;
+      width: 100% !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-text-fill-color: #ffffff !important;
+    }
+    .nav-links a:active { color: #5a9eff !important; -webkit-text-fill-color: #5a9eff !important; }
+    .nav-links a .nav-num {
+      font-size: 11px !important;
+      color: #5a9eff !important;
+      -webkit-text-fill-color: #5a9eff !important;
+      letter-spacing: 2px;
+      font-weight: 500;
+      min-width: 26px;
+    }
+    /* dim overlay behind the drawer */
+    .nav-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 499;
+      /* no backdrop filter - causes blur on sibling elements in some browsers */
+    }
+    .nav-overlay.visible { display: block; }
     .nav-social { display: none; }
-    .hamburger { display: flex; }
+    .hamburger { display: flex !important; z-index: 9999 !important; position: relative !important; }
 
     /* Sections */
     section { padding: 90px 20px 60px; }
@@ -623,22 +675,30 @@
 <body>
 
 <div class="scroll-line" id="scrollLine"></div>
+<div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
 <canvas id="bg"></canvas>
 
 <!-- NAV -->
 <nav>
   <div class="nav-logo">SAJIN S</div>
   <ul class="nav-links" id="navLinks">
-    <li><a onclick="goTo('about');closeMenu()">About</a></li>
-    <li><a onclick="goTo('skills');closeMenu()">Skills</a></li>
-    <li><a onclick="goTo('experience');closeMenu()">Experience</a></li>
-    <li><a onclick="goTo('education');closeMenu()">Education</a></li>
-    <li><a onclick="goTo('projects');closeMenu()">Projects</a></li>
-    <li><a onclick="goTo('contact');closeMenu()">Contact</a></li>
+    <li><a onclick="goTo('about');closeMenu()"><span class="nav-num">01</span>About</a></li>
+    <li><a onclick="goTo('skills');closeMenu()"><span class="nav-num">02</span>Skills</a></li>
+    <li><a onclick="goTo('experience');closeMenu()"><span class="nav-num">03</span>Experience</a></li>
+    <li><a onclick="goTo('education');closeMenu()"><span class="nav-num">04</span>Education</a></li>
+    <li><a onclick="goTo('projects');closeMenu()"><span class="nav-num">05</span>Projects</a></li>
+    <li><a onclick="goTo('contact');closeMenu()"><span class="nav-num">06</span>Contact</a></li>
+    <li style="border-bottom:none;padding-top:24px;">
+      <div style="display:flex;gap:16px;">
+        <a href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:500 !important;letter-spacing:1px;padding:10px 20px;border-radius:8px;border:1px solid rgba(90,158,255,0.3);background:rgba(90,158,255,0.06);color:#8ab4ff !important;width:auto;">LinkedIn</a>
+        <a href="https://github.com/Sajin1119" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:500 !important;letter-spacing:1px;padding:10px 20px;border-radius:8px;border:1px solid rgba(90,158,255,0.3);background:rgba(90,158,255,0.06);color:#8ab4ff !important;width:auto;">GitHub</a>
+        <a href="https://wa.me/919605404478" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:500 !important;letter-spacing:1px;padding:10px 20px;border-radius:8px;border:1px solid rgba(37,211,102,0.3);background:rgba(37,211,102,0.06);color:#25D366 !important;width:auto;">WhatsApp</a>
+      </div>
+    </li>
   </ul>
-  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu" type="button">
     <span></span><span></span><span></span>
-  </div>
+  </button>
   <div class="nav-social">
     <a href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank" title="LinkedIn">
       <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -1233,13 +1293,16 @@ function goTo(id) {
 function toggleMenu() {
   const nav = document.getElementById('navLinks');
   const ham = document.getElementById('hamburger');
-  nav.classList.toggle('mobile-open');
+  const overlay = document.getElementById('navOverlay');
+  const isOpen = nav.classList.toggle('mobile-open');
   ham.classList.toggle('open');
-  document.body.style.overflow = nav.classList.contains('mobile-open') ? 'hidden' : '';
+  overlay.classList.toggle('visible', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
 }
 function closeMenu() {
   document.getElementById('navLinks').classList.remove('mobile-open');
   document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('visible');
   document.body.style.overflow = '';
 }
 
@@ -1494,4 +1557,4 @@ window.addEventListener('scroll', () => {
 
     } catch (err) {
       console.error('EmailJS error:', err);
-      const errMsg = err && err.text ? err.text : (err && err.message ? err.message : 
+      const errMsg = err && err.text ? err.text : (err && err.message ? err.message :       
