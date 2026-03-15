@@ -52,6 +52,7 @@
     transition: color .2s; cursor: pointer;
   }
   .nav-links a:hover { color: #5a9eff; }
+  .nav-links a .nav-num { display: none; }
 
   /* ── SECTIONS ── */
   section {
@@ -467,6 +468,7 @@
     color: #a78bfa;
   }
   .lang-colors { --html:#e34c26; --css:#264de4; --javascript:#f1e05a; --python:#3572A5; --typescript:#2b7489; --default:#5a9eff; }
+  .mobile-only-social { display: none; }
 
   /* ── HAMBURGER MENU ── */
   .hamburger {
@@ -558,6 +560,8 @@
     .nav-overlay.visible { display: block; }
     .nav-social { display: none; }
     .hamburger { display: flex !important; z-index: 9999 !important; position: relative !important; }
+    .mobile-only-social { display: flex !important; }
+    .nav-links a .nav-num { display: inline !important; }
 
     /* Sections */
     section { padding: 90px 20px 60px; }
@@ -688,11 +692,11 @@
     <li><a onclick="goTo('education');closeMenu()"><span class="nav-num">04</span>Education</a></li>
     <li><a onclick="goTo('projects');closeMenu()"><span class="nav-num">05</span>Projects</a></li>
     <li><a onclick="goTo('contact');closeMenu()"><span class="nav-num">06</span>Contact</a></li>
-    <li style="border-bottom:none;padding-top:24px;">
-      <div style="display:flex;gap:16px;">
-        <a href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:500 !important;letter-spacing:1px;padding:10px 20px;border-radius:8px;border:1px solid rgba(90,158,255,0.3);background:rgba(90,158,255,0.06);color:#8ab4ff !important;width:auto;">LinkedIn</a>
-        <a href="https://github.com/Sajin1119" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:500 !important;letter-spacing:1px;padding:10px 20px;border-radius:8px;border:1px solid rgba(90,158,255,0.3);background:rgba(90,158,255,0.06);color:#8ab4ff !important;width:auto;">GitHub</a>
-        <a href="https://wa.me/919605404478" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:500 !important;letter-spacing:1px;padding:10px 20px;border-radius:8px;border:1px solid rgba(37,211,102,0.3);background:rgba(37,211,102,0.06);color:#25D366 !important;width:auto;">WhatsApp</a>
+    <li class="mobile-only-social" style="border-bottom:none;padding-top:28px;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="https://www.linkedin.com/in/sajinsatheesan/" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:600 !important;padding:10px 20px;border-radius:8px;border:1px solid rgba(90,158,255,0.3);background:rgba(90,158,255,0.08);color:#8ab4ff !important;text-decoration:none;-webkit-text-fill-color:#8ab4ff !important;">LinkedIn</a>
+        <a href="https://github.com/Sajin1119" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:600 !important;padding:10px 20px;border-radius:8px;border:1px solid rgba(90,158,255,0.3);background:rgba(90,158,255,0.08);color:#8ab4ff !important;text-decoration:none;-webkit-text-fill-color:#8ab4ff !important;">GitHub</a>
+        <a href="https://wa.me/919605404478" target="_blank" onclick="closeMenu()" style="font-size:13px !important;font-weight:600 !important;padding:10px 20px;border-radius:8px;border:1px solid rgba(37,211,102,0.3);background:rgba(37,211,102,0.06);color:#25D366 !important;text-decoration:none;-webkit-text-fill-color:#25D366 !important;">WhatsApp</a>
       </div>
     </li>
   </ul>
@@ -1557,4 +1561,4 @@ window.addEventListener('scroll', () => {
 
     } catch (err) {
       console.error('EmailJS error:', err);
-      const errMsg = err && err.text ? err.text : (err && err.message ? err.message :       
+      const errMsg = err && err.text ? err.text : (err && err.message ? err.message : 
